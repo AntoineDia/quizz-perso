@@ -3,6 +3,7 @@
     <select
       class="redirectInput"
       v-model="that.next"
+      @click="syncRedirect"
     >
       <option value="">Next Question</option>
       <option
@@ -17,7 +18,7 @@
 <script>
 export default {
   name: 'NextQuestion',
-  props: ['config','lang','that'],
+  props: ['config','lang','that','i'],
   watch:{
     that:{
       deep: true,
@@ -38,6 +39,17 @@ export default {
       return questions
     }
   },
+  methods:{
+    syncRedirect(){
+      console.log(this.i)
+      this.config.languages.forEach(lang => {
+        try{
+          this.config.questions[lang][this.i].next = this.that.next
+        }catch(e){}
+
+      })
+    }
+  },
 }
 </script>
 <style scoped>
@@ -45,7 +57,7 @@ export default {
 .redirectInput{
   font-size: 15px;
   padding: 10px 15px;
-  width: 331px;
+  width: 100%;
   border: 1px solid #ccc;
   cursor: pointer;
 }

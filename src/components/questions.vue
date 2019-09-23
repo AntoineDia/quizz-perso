@@ -27,7 +27,8 @@
             <NextQuestion
               :config="config"
               :lang="lang"
-              :that="config.questions[lang][i]"
+              :that="question"
+              :i="i"
               v-on:next-update="sync('next',i,lang)"
             ></NextQuestion>
           </div>
@@ -59,6 +60,16 @@
               >
             </div>
           </div>
+
+          <div>
+            <span>Answers</span>
+            <Answer
+              :config="config"
+              :lang='lang'
+              :i='i'
+            ></Answer>
+          </div>
+
           <div class="removeQuestion">
             <button @click="removeQuestion">Remove question</button>
           </div>
@@ -75,10 +86,11 @@
 <script>
 import { Question } from '../Objects'
 import NextQuestion from './nextQuestion'
+import Answer from './answer'
 export default {
   name: 'Questions',
   props: ['config'],
-  components: { NextQuestion },
+  components: { NextQuestion, Answer },
   methods:{
     newQuestion(){
       for(let lang in this.config.questions){
@@ -92,8 +104,6 @@ export default {
     sync(el, i, lg){
       this.config.languages.forEach(lang => {
         this.config.questions[lang][i][el] = this.config.questions[lg][i][el]
-        console.log('new',this.config.questions[lg][i][el])
-        console.log('old',this.config.questions[lang][i][el])
       })
       this.config.questions
     },
@@ -120,7 +130,7 @@ export default {
   padding: 5px;
   margin-bottom: 10px;
   margin: auto;
-  font-size: 30px;
+  font-size: 25px;
 }
 .addQuestion > button{
   margin-top: 10px;
