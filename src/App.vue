@@ -46,7 +46,7 @@ export default {
   watch:{
     config:{
       deep: true,
-      handler(updt){console.log(updt)}
+      // handler(updt){console.log(updt)}
     }
   },
   methods:{

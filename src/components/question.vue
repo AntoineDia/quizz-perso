@@ -68,7 +68,6 @@
 </template>
 
 <script>
-import { Question } from '../Objects'
 import Redirect from './redirect'
 import Answer from './answer'
 
@@ -79,7 +78,6 @@ export default {
   methods:{
     updateQuestion(obj,val){
       obj.question = val
-      console.log('hello',this.question)
     },
     toggle(ev){
       let $qHolder

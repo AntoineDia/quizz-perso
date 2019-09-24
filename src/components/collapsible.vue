@@ -34,9 +34,6 @@ export default {
       else
         content.style.maxHeight = 'max-content'
     },
-    syncQuestions(origin){
-      console.log(origin)
-    }
   },
 }
 </script>

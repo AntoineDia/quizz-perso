@@ -37,7 +37,6 @@ export default {
       document.querySelector('.newLang > input').className = ''
 
       let lang0 = this.config.langs[0]
-      console.log(lang0)
       Vue.set(this.config.questions, this.newLang, [])
       this.config.questions[lang0].forEach((question,i) => {
         Vue.set(this.config.questions[this.newLang], i, new Question())
