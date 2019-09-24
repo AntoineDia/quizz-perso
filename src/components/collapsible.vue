@@ -9,10 +9,8 @@
         class="child"
         :is="childComponent"
         :config="config"
-        v-on:question-update="syncQuestions"
       ></component>
     </p>
-
   </div>
 </template>
 
@@ -29,7 +27,6 @@ export default {
   },
   methods:{
     toggle(event){
-      console.log('event in collapsibel', this.config)
       event.target.classList.toggle("active")
       const content = event.target.nextElementSibling
       if (content.style.maxHeight)
@@ -47,39 +44,38 @@ export default {
 <style scoped>
 
 .collapsible {
-  background-color: #eee;
-  color: #444;
-  cursor: pointer;
-  padding: 18px;
+  padding: 15px;
   width: 100%;
   border: none;
   text-align: left;
   outline: none;
-  font-size: 15px;
+  font-size: 18px;
 }
-
 .active, .collapsible:hover {
   background-color: #ccc;
 }
 
+.collapsible:hover:after{
+  color: #eee;
+}
+
 .collapsible:after {
-  content: '\02795'; /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: white;
+  content: '\25C0';
+  font-size: 17px;
+  color: #ccc;
   float: right;
   margin-left: 5px;
 }
 .active:after {
-  content: "\2796"; /* Unicode character for "minus" sign (-) */
+  content: "\25BC";
+  color: #eee;
 }
-
 .content {
   max-height: 0;
   overflow: hidden;
   transition: 0.2s ease-out;
   background-color: #fbfbfb;
 }
-
 .child{
   margin: 15px auto;
 }

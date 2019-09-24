@@ -2,9 +2,9 @@
   <div class='tab'>
     <span
       class="selectedLang"
-      v-for="lang in config.languages"
+      v-for="lang in config.langs"
       :key="lang"
-    >| {{lang.toUpperCase()}} |</span>
+    >{{lang}}</span>
     <div class="newLang">
       <input
         type="text"
@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import { Question } from '../Objects'
 export default {
   name: 'Langues',
   props: ['config'],
@@ -33,7 +35,14 @@ export default {
         return
       }
       document.querySelector('.newLang > input').className = ''
-      this.config.addLang(this.newLang)
+
+      let lang0 = this.config.langs[0]
+      console.log(lang0)
+      Vue.set(this.config.questions, this.newLang, [])
+      this.config.questions[lang0].forEach((question,i) => {
+        Vue.set(this.config.questions[this.newLang], i, new Question())
+      });
+      this.config.langs.push(this.newLang)
       this.newLang = ''
     },
   },
@@ -45,10 +54,10 @@ export default {
 .selectedLang{
   background-color: #ccc;
   padding: 5px;
-  margin: 0 2px;
+  margin: 0 4px;
   white-space: none;
+  text-transform: uppercase;
 }
-
 .newLang{
   margin: 15px auto;
 }
@@ -69,7 +78,7 @@ button{
   border: 1px solid #ccc;
 }
 button:active, button:hover{
-  background-color: white;
+  background-color: #eee;
   border: 1px solid #ccc;
 }
 

@@ -15,8 +15,3 @@ export default {
   props: ['config']
 }
 </script>
-<style scoped>
-
-
-
-</style>

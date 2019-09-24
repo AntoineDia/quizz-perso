@@ -1,163 +1,93 @@
 <template>
-  <div class="row">
-    <div>
-      <div
-        class="col"
-        v-for="lang in config.languages"
-        :key="lang"
-      >
+  <div>
+    <div class="views">
+      <label>View</label>
+      <button
+        v-for="view in views" :key="view"
+        @click="changeView"
+        :class="{ 'active' : view === currentView }"
+      >{{view}}</button>
+    </div>
 
-        <div class="lang">| {{lang.toUpperCase()}} |</div>
+    <div
+      v-for="(question, qId) in config.questions[lang0]" :key="question.id"
+    >
+      <QuestionComp
+        :currentView="currentView"
+        :question="getQuestionInAllLangs(qId)"
+        :lang0="lang0"
+        :config="config"
+      ></QuestionComp>
+    </div>
 
-        <div
-          class="questions"
-          v-for="(question, i) in config.questions[lang]"
-          :key="question.id"
-        >
-
-          <div class="input">
-            <label>Question</label>
-            <input type="text" placeholder="What do you want to ask ?"
-              v-model="config.questions[lang][i].question"
-            >
-          </div>
-
-          <div class="input">
-            <label>Redirecto to</label>
-            <NextQuestion
-              :config="config"
-              :lang="lang"
-              :that="question"
-              :i="i"
-              v-on:next-update="sync('next',i,lang)"
-            ></NextQuestion>
-          </div>
-
-          <div class="input">
-            <label>Collumns - Rows</label>
-            <div class="dualInput">
-              <input type="number" placeholder="Collumns"
-                v-model="config.questions[lang][i].col"
-                @input="sync('col',i,lang)"
-              >
-              <input type="number" placeholder="Rows"
-                v-model="config.questions[lang][i].row"
-                @input="sync('row',i,lang)"
-              >
-            </div>
-          </div>
-
-          <div class="input">
-            <label>Min - Max</label>
-            <div class="dualInput">
-              <input type="number" placeholder="Min"
-                v-model="config.questions[lang][i].min"
-                @input="sync('min',i,lang)"
-              >
-              <input type="number" placeholder="Max"
-                v-model="config.questions[lang][i].max"
-                @input="sync('max',i,lang)"
-              >
-            </div>
-          </div>
-
-          <div>
-            <span>Answers</span>
-            <Answer
-              :config="config"
-              :lang='lang'
-              :i='i'
-            ></Answer>
-          </div>
-
-          <div class="removeQuestion">
-            <button @click="removeQuestion">Remove question</button>
-          </div>
-        </div>
-
-        <div class = "addQuestion">
-          <button @click="newQuestion">New question</button>
-        </div>
-      </div>
+    <div class="newQuestion">
+      <button @click="newQuestion">New Question</button>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 import { Question } from '../Objects'
-import NextQuestion from './nextQuestion'
-import Answer from './answer'
+import QuestionComp from './question'
 export default {
   name: 'Questions',
   props: ['config'],
-  components: { NextQuestion, Answer },
+  data(){
+    return {
+      currentView: 'Unified',
+      views: ['Unified','Translation','Detail'],
+      lang0: 'fr',
+    }
+  },
+  components: { QuestionComp },
   methods:{
-    newQuestion(){
-      for(let lang in this.config.questions){
-        this.config.questions[lang].push(new Question)
-      }
-      this.$emit('re-expand')
+    changeView(ev){
+      this.currentView = ev.target.innerText
     },
-    removeQuestion(){
-      console.log('todo remove question')
-    },
-    sync(el, i, lg){
-      this.config.languages.forEach(lang => {
-        this.config.questions[lang][i][el] = this.config.questions[lg][i][el]
+    getQuestionInAllLangs(qId){
+      let q = {}
+      this.config.langs.forEach(lang =>{
+        if(!this.config.questions[lang]){
+          Vue.set(this.config.questions, lang, [new Question])
+        }
+        q[lang] = this.config.questions[lang][qId]
       })
-      this.config.questions
+      return q
     },
+    newQuestion(){
+      this.config.langs.forEach(lang => {
+        Vue.set(this.config.questions[lang], this.config.questions[lang].length, new Question)
+      })
+    }
   }
 }
 </script>
 
 <style scoped>
-.row{
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
+.hidden{
+  display: none;
 }
-.col{
-  display: inline-block;
-  width: min-content;
+.views{
+  margin: 15px auto;
+  text-align: center;
+}
+.newQuestion > button{
+  margin: 5px;
   padding: 15px;
-  border-right: 1px solid #485f4d;
-}
-.lang{
-  width: min-content;
-  background-color: #ccc;
-  white-space: none;
-  padding: 5px;
-  margin-bottom: 10px;
-  margin: auto;
-  font-size: 25px;
-}
-.addQuestion > button{
-  margin-top: 10px;
-}
-.addQuestion > button, .removeQuestion > button{
-  width: 331px;
-  padding: 10px 15px;
-  background-color: #ccc;
-  border: 1px solid #ccc;
-}
-.addQuestion > button:hover, .removeQuestion > button:hover{
-  background-color: white;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-input{
   width: 300px;
 }
-.input{
-  margin: 15px auto;
+.newQuestion > button:hover, .newQuestion > button:active{
+  background-color: #ccc;
 }
-.dualInput > input{
-  display: inline-block;
-  width: 134px;
+.views > button{
+  margin: 5px;
+  padding: 10px;
 }
-.redirect::placeholder{
-  color: #485f4d;
+.views > button:hover, .active{
+  background-color: #ccc;
 }
-
+.newQuestion{
+  text-align: center;
+}
 </style>
