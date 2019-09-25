@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+
+<div id="app">
+  <button v-if="Object.keys(config).length === 0"
+    @click="config = new Questionary">
+    New Questionary</button>
+  <template v-else>
+    <div class="row">
+      <h1>Main</h1>
+      <label>Name</label>
+      <input type="text" v-model="config.name">
+    </div>
+    <div class="row">
+      <h1>Languages</h1>
+      <span v-for="lang in config.langs">{{lang}}</span>
+      <input type="text" v-model="config.name">
+    </div>
+    <div class="row">
+
+    </div>
+  </template>
+  <pre>{{config}}</pre>
+</div>
+
+</body>
+<script src="./vue.js"></script>
+<style>
+*,body{
+  background-color: #e0e4ec;
+  color: #0b0c0c;
+  margin: 0; padding: 0; border: 0;
+  font-family: sans-serif;
+  font-size: 15px;
+}
+input{
+  border: 1px solid #747a81;
+  border-radius: 2px;
+  padding: 5px 10px;
+  max-width: 100%;
+}
+#app{
+  width: 720px;
+  border: 1px solid #0b0c0c;
+  overflow-x: hidden;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  height: 100%;
+}
+</style>
+</html>
