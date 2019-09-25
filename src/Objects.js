@@ -1,5 +1,5 @@
 
-const defaultLang = ['fr','en']
+const defaultLang = ['fr']
 
 function Answer(){
   this.src = '',

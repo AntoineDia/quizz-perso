@@ -71,6 +71,9 @@ export default {
   outline: 0;
   border-style: none;
 }
+body{
+  background-color: #fbfbfb;
+}
 input, label {
   display:block;
 }

@@ -24,9 +24,13 @@
       ></QuestionComp>
     </div>
 
-    <div class="newQuestion">
+    <div class="newQuestion"
+      v-if="config.langs[0]"
+    >
       <button @click="newQuestion">New Question</button>
     </div>
+
+    <div class="newQuestion" v-else><h2>Add a language to edit questions</h2></div>
   </div>
 </template>
 
@@ -41,7 +45,6 @@ export default {
     return {
       currentView: 'Flow',
       views: ['Flow','Translation','Detail'],
-      lang0: this.config.langs[0],
     }
   },
   components: { QuestionComp },
@@ -71,6 +74,12 @@ export default {
         this.config.questions[lang].splice(idInArray,1)
       })
     }
+  },
+  computed:{
+    lang0() {
+      if(this.config.langs[0]) return this.config.langs[0]
+      return ''
+    },
   }
 }
 </script>
@@ -117,6 +126,7 @@ export default {
   transform: translateX(150%);
 }
 .remove:hover{
-  background-color: #ccc;
+  background-color: #db3254;
+  color: white;
 }
 </style>
