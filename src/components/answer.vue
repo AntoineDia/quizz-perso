@@ -17,6 +17,7 @@
             :holder="answer"
             :lang="lang"
             :config="config"
+            :qId="qId"
           ></Redirect>
         </div>
       </div>
@@ -28,7 +29,7 @@
 import Redirect from './redirect'
 export default {
   name: 'Answer',
-  props: ['options','config','lang'],
+  props: ['options','config','lang','qId'],
   components:{ Redirect },
   methods:{
     toggleOptions(ev){

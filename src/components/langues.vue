@@ -30,7 +30,7 @@ export default {
   },
   methods:{
     newLangage(){
-      if(this.newLang.length !== 2) {
+      if(this.newLang.length !== 2 || this.config.langs.includes(this.newLang)) {
         document.querySelector('.newLang > input').className = 'error'
         return
       }
@@ -40,6 +40,7 @@ export default {
       Vue.set(this.config.questions, this.newLang, [])
       this.config.questions[lang0].forEach((question,i) => {
         Vue.set(this.config.questions[this.newLang], i, new Question())
+        this.config.questions[this.newLang][i].id = this.config.questions[lang0][i].id
       });
       this.config.langs.push(this.newLang)
       this.newLang = ''

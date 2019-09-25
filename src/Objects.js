@@ -1,16 +1,16 @@
 
-const defaultLang = ['fr', 'en']
+const defaultLang = ['fr','en']
 
 function Answer(){
   this.src = '',
   this.tags = []
-  this.next = -1
+  this.next = ''
 }
 
 function Question(){
   this.question = ''
   this.id = 'q' + Date.now()
-  this.next = -1
+  this.next = ''
   this.max = 1
   this.min = 1
   this.col = 2
@@ -35,12 +35,6 @@ Questionary.prototype.addLang = function(lang){
 
   // this.questions[lang] = [].push(new Question)
 }
-
-// Questionary.prototype.syncLangs = function(){
-//   this.langs.forEach(lang => {
-//     this.questions[lang] = JSON.parse(JSON.stringify(this.questions[defaultLang]))
-//   })
-// }
 
 export {
   Answer, Question, Questionary

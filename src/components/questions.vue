@@ -7,16 +7,20 @@
         @click="changeView"
         :class="{ 'active' : view === currentView }"
       >{{view}}</button>
+      <label v-if="currentView === 'Flow'"><b>{{lang0.toUpperCase()}}</b></label>
     </div>
 
     <div
+      class="container"
       v-for="(question, qId) in config.questions[lang0]" :key="question.id"
     >
+      <button class="remove" @click="removeQuestion(qId)">Remove</button>
       <QuestionComp
         :currentView="currentView"
         :question="getQuestionInAllLangs(qId)"
         :lang0="lang0"
         :config="config"
+        :i="qId+1"
       ></QuestionComp>
     </div>
 
@@ -35,9 +39,9 @@ export default {
   props: ['config'],
   data(){
     return {
-      currentView: 'Unified',
-      views: ['Unified','Translation','Detail'],
-      lang0: 'fr',
+      currentView: 'Flow',
+      views: ['Flow','Translation','Detail'],
+      lang0: this.config.langs[0],
     }
   },
   components: { QuestionComp },
@@ -57,7 +61,14 @@ export default {
     },
     newQuestion(){
       this.config.langs.forEach(lang => {
+        const id = 'q' + Date.now()
         Vue.set(this.config.questions[lang], this.config.questions[lang].length, new Question)
+        this.config.questions[lang][this.config.questions[lang].length-1].id = id
+      })
+    },
+    removeQuestion(idInArray){
+      this.config.langs.forEach(lang => {
+        this.config.questions[lang].splice(idInArray,1)
       })
     }
   }
@@ -89,5 +100,23 @@ export default {
 }
 .newQuestion{
   text-align: center;
+}
+.container{
+  width: min-content;
+  margin: auto;
+  position: relative;
+}
+.remove{
+  height: calc(100% - 19px);
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transform: translateX(150%);
+}
+.remove:hover{
+  background-color: #ccc;
 }
 </style>

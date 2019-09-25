@@ -44,15 +44,19 @@ export default {
     }
   },
   watch:{
-    config:{
-      deep: true,
-      // handler(updt){console.log(updt)}
-    }
+    // config:{
+    //   deep: true,
+    //   handler(updt){console.log(updt)}
+    // }
   },
   methods:{
     save(){
       const str = JSON.stringify(this.config)
       console.log(str)
+      let event = new KeyboardEvent("keydown", {
+        bubbles : true, cancelable : true, keyCode : 123,
+      })
+      document.dispatchEvent(event)
       this.msg = 'Json Stringified in console'
     }
   },
