@@ -1,13 +1,15 @@
 <template>
   <div>
     <div class="views">
-      <label>View</label>
       <button
         v-for="view in views" :key="view"
         @click="changeView"
         :class="{ 'active' : view === currentView }"
+        v-if="config.langs[1]"
       >{{view}}</button>
-      <label v-if="currentView === 'Flow'"><b>{{lang0.toUpperCase()}}</b></label>
+      <label v-if="currentView === 'Flow' && config.langs[1] ">
+        <b>{{lang0.toUpperCase()}}</b>
+      </label>
     </div>
 
     <div

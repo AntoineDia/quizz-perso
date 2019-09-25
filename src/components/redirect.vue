@@ -47,7 +47,6 @@ export default {
     },
     updateNext(event, value){
       const $selector = event.target.parentElement.parentElement.querySelector('.selector')
-      const $input = event.target.parentElement.parentElement.querySelector('input')
       if(value !== -1){
         this.id = value.id
         this.holder.next = value.id
