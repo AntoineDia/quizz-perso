@@ -35,3 +35,5 @@ var vm = new Vue({
     },
   }
 })
+
+//$root
