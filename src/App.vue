@@ -4,20 +4,17 @@
   <div class="row max"
     v-if="Object.keys(config).length === 0">
     <h1>Questionary</h1>
-    <button
-      @click="config = Questionary()">
-      New</button>
-
     <label>Previous</label>
     <textarea v-model="oldJson" rows=5
       placeholder="Enter a questionary config JSON"
-    ></textarea>
-    <button @click="loadConfig">Load</button>
+    ></textarea><br>
+    <button @click="loadConfig">Load</button><br><br>
+    <button
+      @click="config = Questionary()">
+      New</button>
   </div>
 
   <div v-else>
-
-    <font-awesome-icon icon="language" class="big"/>
 
     <div class="row">
       <h1>Main</h1>
@@ -30,23 +27,27 @@
       <h1>Languages</h1>
       <div class="content langs">
         <div class="lang"
-          v-for="lang in config.langs" :key="lang"
+          v-for="lang in langs" :key="lang"
           @click="removeLang(lang)"
           >{{lang}}</div>
       </div>
       <input class="gluedRigth tinyInput" placeholder="Language" maxlength=2
+        :class="{langError: langError}"
         @keyup.enter="addLangage" v-model="newLang">
       <button @click="addLangage" class="gluedLeft">Add</button>
     </div>
     <div class="row">
       <h1>Questions</h1>
       <Questions
-        :questions="config.questions"/>
+        v-if="langs[0]"
+        :questions="config.questions"
+        :langs="langs"/>
+      <p v-else>Add a language to edit questions</p>
     </div>
   </div>
 
   <div class="row max" v-if="Object.keys(config).length > 0">
-    <button @click="save">Get JSON</button>
+    <button @click="save">GET JSON</button>
   </div>
 
 </div>
@@ -59,14 +60,16 @@ export default {
   components:{ Questions },
   data: function(){ return {
     oldJson: '',
-    defaultLangs : ['fr','en'],
+    defaultLangs : ['fr','en','es','ba','de'],
+    langs: [],
     config: {},
     newLang: '',
+    langError: false,
   }},
   computed:{
     lang0: function(){
-      if(this.config.langs)
-        return this.config.langs[0]
+      if(this.langs)
+        return this.langs[0]
       return null
     },
     currentQuestionId(){
@@ -84,10 +87,10 @@ export default {
       }
     },
     Questionary: function(){
+      this.langs = this.defaultLangs
       var vm = this
       return {
         name : '',
-        langs: vm.defaultLangs,
         questions: vm.defaultLangs.reduce(function(acc, lang){
           acc[lang] = [vm.Question()]; return acc
         }, {})
@@ -105,13 +108,19 @@ export default {
     },
     Answer: function(){ return { src: '', tags: [], next: '' } },
     removeLang(lang){
-      this.config.langs.splice(this.config.langs.indexOf(lang), 1)
+      this.langs.splice(this.langs.indexOf(lang), 1)
       delete this.config.questions[lang]
     },
     addLangage: function(){
-      if(this.newLang.length < 2 || ~this.config.langs.indexOf(this.newLang))
-        return
-      this.config.langs.push(this.newLang)
+      this.newLang = this.newLang.toLowerCase()
+      if(this.newLang.length < 2 || ~this.langs.indexOf(this.newLang)){
+        var vm = this
+        setTimeout(function(){
+          vm.langError = false
+        }, 2000)
+        return this.langError = true
+      }
+      this.langs.push(this.newLang)
       this.$set(this.config.questions, this.newLang, [])
       this.fillQuestions(this.newLang)
       this.newLang = ''
@@ -124,7 +133,8 @@ export default {
       })
     },
     save: function(){
-      console.log(this, 'config', this.config)
+      console.log('Vue model',this)
+      console.log('config', this.config)
       // console.log(JSON.stringify(this.config))
     }
   },
@@ -146,18 +156,23 @@ export default {
   border-style: none;
   border-radius: 2px;
 }
+::-webkit-scrollbar {
+  display: none;
+}
 #app{
+  padding: 20px 0;
   text-align: center;
   width: 720px;
-  position: absolute;
-  top: 50%; left:50%;
-  transform: translate(-50%,-50%)
+  margin: auto;
+  overflow: auto;
 }
 label {
   display: block;
   padding-left: 10px;
+  text-align: left;
 }
 input, textarea{
+  resize: vertical;
   border-radius: 2px;
   border: 1px solid #56585c;
   padding: 5px 10px;
@@ -170,7 +185,11 @@ input:hover, input:focus,
 textarea:hover, textarea:active{
   border: 1px solid #0b0c0c;
 }
+pre{
+  text-align: left;
+}
 button{
+  max-width: 125px;
   font-size: 15px;
   border: 1px solid #56585c;
   color: #f0f1f5;
@@ -178,15 +197,17 @@ button{
   cursor: pointer;
   padding: 5px 10px;
   transition-duration: 0.2s;
+  font-weight: bold;
 }
 button:hover{
   background-color: #f0f1f5;
   color: #0b0c0c;
+  border: 1px solid #0b0c0c;
 }
 h1{
   cursor: pointer;
-  background-color: #4b4d4e;
-  color: #f5fbfa;
+  background-color: #56585c;
+  color: #f0f1f5;
   width: 80%;
   margin: auto;
   font-size: 25px;
@@ -199,7 +220,6 @@ h1{
 }
 .row{
   margin-bottom: 15px;
-  padding: 0 10px;
 }
 .content{
   margin-top: 15px;
@@ -210,20 +230,20 @@ h1{
   color: #f0f1f5;
   border-radius: 2px;
   text-transform: uppercase;
-  font-family: monospace;
+  font-family: 'Consolas';
   margin: 0 5px;
   font-size: 20px;
   padding: 2px 7px;
   cursor: pointer;
 }
 .lang:hover{ background-color: #db3254 }
-.lang:hover:after{
+.lang:hover:before{
   content: '-';
   font-weight: bold;
   display: inline-block;
-  animation: contentMinus 0.2s;
+  animation: expandX 0.2s;
 }
-@keyframes contentMinus {
+@keyframes expandX {
   0% { width: 0; transform: scale(0,1) }
   100%{ width: 11px; transform: scale(1,1) }
 }
@@ -234,6 +254,7 @@ h1{
   border-radius: 2px 0 0 2px;
 }
 .gluedLeft{
+  margin-left: 0;
   border-radius: 0 2px 2px 0;
 }
 .tinyInput{
@@ -254,5 +275,12 @@ h1{
 .big{
   font-size: 50px;
   color: #2266EE;
+}
+.hidden{display: none;}
+.langError{
+  border: 1px solid #db3254;
+}
+.row > p{
+  margin-top: 10px;
 }
 </style>
