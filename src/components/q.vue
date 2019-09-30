@@ -60,12 +60,19 @@
     </div>
     <div class="answerRow">
       <span class="optionsHead">Options</span>
-      <button class="optionEdit" @click="answerEdition = !answerEdition" :class="answerEdition ? 'active' : ''"></button>
+      <button class="optionEdit" :class="answerEdition ? 'active' : ''"
+        @click="answerEdition = !answerEdition"></button>
       <div :class="!answerEdition ? 'height0' : ''">
-        <div v-for="(answers, lang) in optionByQuestion(qId)" :key="lang"
-          :class="!translationMode && lang !== langs[0] ? 'height0' : ''">
-          <div v-for="(answer, i) in answers" :key="i">
-            {{lang}} option {{i+1}}{{answer}}
+        <div v-for="(options, optId) in optionByQuestion(qId)" :key="optId">
+          <label>Option {{parseInt(optId) + 1}}</label>
+          <div v-for="(option, lang) in options" :key="lang + optId">
+            <div v-if="lang === langs[0]">
+              <label>Illustration source</label>
+              <input type="text" v-model="option.src">
+            </div>
+            <label v-if="lang === langs[0]">Text</label>
+            <div class="tileLang">{{lang}}</div>
+            <input type="text" v-model="option.text">
           </div>
         </div>
       </div>
@@ -79,7 +86,7 @@
 export default {
   name: 'Questions',
   data: function(){ return {
-    translationMode: false,
+    translationMode: true,
     answerEdition: false,
     editionMode: false,
     currentQ: {
@@ -119,11 +126,15 @@ export default {
     },
     optionByQuestion: function(id){
       var questionsInId = this.questionsInAllLangs[id]
-      var obj = {}
-      Object.keys(questionsInId).forEach(function(lang,i){
-        obj[lang] = questionsInId[lang].options
-      })
-      return obj
+      var options = {}
+      var vm = this
+      for(var optionId in questionsInId[this.langs[0]].options){
+        if(!options[optionId]) options[optionId] = {}
+        this.langs.forEach(function(lang){
+          options[optionId][lang] = questionsInId[lang].options[optionId]
+        })
+      }
+      return options
     }
   }
 }
