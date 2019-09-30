@@ -29,6 +29,7 @@
         <div class="lang"
           v-for="lang in langs" :key="lang"
           @click="removeLang(lang)"
+          :class="[ lang === langs[0] ? 'blue' : '' ]"
           >{{lang}}</div>
       </div>
       <input class="gluedRigth tinyInput" placeholder="Language" maxlength=2
@@ -40,6 +41,7 @@
       <h1>Questions</h1>
       <Questions
         v-if="langs[0]"
+        @update-id="lastQuestionId++"
         :questions="config.questions"
         :langs="langs"/>
       <p v-else>Add a language to edit questions</p>
@@ -60,22 +62,18 @@ export default {
   components:{ Questions },
   data: function(){ return {
     oldJson: '',
-    defaultLangs : ['fr','en','es','ba','de'],
+    defaultLangs : ['fr','en','nl'],
     langs: [],
     config: {},
     newLang: '',
     langError: false,
+    lastQuestionId: 0,
   }},
   computed:{
     lang0: function(){
       if(this.langs)
         return this.langs[0]
       return null
-    },
-    currentQuestionId(){
-      if(this.config.questions)
-        return this.config.questions[this.lang0].length
-      return 0
     },
   },
   methods:{
@@ -99,14 +97,14 @@ export default {
     Question: function(){
       var vm = this
       return {
-        id : 'q' + vm.currentQuestionId,
+        id : 'q' + vm.lastQuestionId,
         question : '', next : '',
         max : 1, min : 1,
         col : 2, row : 1,
         options : [vm.Answer(), vm.Answer()],
       }
     },
-    Answer: function(){ return { src: '', tags: [], next: '' } },
+    Answer: function(){ return { text: '', src: '', tags: [], next: '' } },
     removeLang(lang){
       this.langs.splice(this.langs.indexOf(lang), 1)
       delete this.config.questions[lang]
@@ -129,7 +127,7 @@ export default {
       var vm = this
       this.config.questions[this.lang0].forEach(function(question, i){
         vm.$set(vm.config.questions[lang], i, vm.Question())
-        vm.config.questions[lang][i].id = 'q' + i
+        vm.config.questions[lang][i].id = vm.config.questions[vm.lang0][i].id
       })
     },
     save: function(){
@@ -162,7 +160,7 @@ export default {
 #app{
   padding: 20px 0;
   text-align: center;
-  width: 720px;
+  width: 600px;
   margin: auto;
   overflow: auto;
 }
@@ -208,7 +206,7 @@ h1{
   cursor: pointer;
   background-color: #56585c;
   color: #f0f1f5;
-  width: 80%;
+  width: 80.5%;
   margin: auto;
   font-size: 25px;
   padding: 5px 0;
@@ -272,11 +270,14 @@ h1{
 .max h1{
   margin-bottom: 10px;
 }
-.big{
-  font-size: 50px;
-  color: #2266EE;
+.blue{
+  background-color: #2266EE;
 }
 .hidden{display: none;}
+.transparent{
+  opacity: 0;
+  visibility: hidden;
+}
 .langError{
   border: 1px solid #db3254;
 }
