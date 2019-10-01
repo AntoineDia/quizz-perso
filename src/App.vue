@@ -21,6 +21,9 @@
       <div class="labelInput content">
         <label>Name</label>
         <input v-model="config.name" placeholder="Name of the questionary">
+        <div>
+          <button @click='config = {}'>Return to title</button>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -43,7 +46,8 @@
         v-if="langs[0]"
         @update-id="lastQuestionId++"
         :questions="config.questions"
-        :langs="langs"/>
+        :langs="langs"
+        :config="config"/>
       <p v-else>Add a language to edit questions</p>
     </div>
   </div>
@@ -52,15 +56,21 @@
     <button @click="save">GET JSON</button>
   </div>
 
+  <textarea class="pre" style="text-align:left;font-family:monospace"
+    readonly="readonly"
+    v-if="json.length > 0" v-model="json"
+    ></textarea>
+
 </div>
 </template>
 
 <script>
-import Questions from './components/q'
+import Questions from './components/questions'
 export default {
   name: 'App',
   components:{ Questions },
   data: function(){ return {
+    json: '',
     oldJson: '',
     defaultLangs : ['fr','en','nl'],
     langs: [],
@@ -68,6 +78,7 @@ export default {
     newLang: '',
     langError: false,
     lastQuestionId: 0,
+    needDisaplay: false,
   }},
   computed:{
     lang0: function(){
@@ -79,7 +90,9 @@ export default {
   methods:{
     loadConfig: function(){
       try{
-        this.config = JSON.parse(this.old)
+        var holder = JSON.parse(this.oldJson)
+        this.langs = Object.keys(holder.questions)
+        this.config = holder
       }catch(e){
         alert('JSON Incorect')
       }
@@ -131,9 +144,16 @@ export default {
       })
     },
     save: function(){
-      console.log('Vue model',this)
-      console.log('config', this.config)
-      // console.log(JSON.stringify(this.config))
+      this.json = JSON.stringify(this.config, null, 2)
+      var vm = this
+      setTimeout(function(){
+        var el = document.getElementsByClassName('pre')[0]
+        el.style.cssText = 'height:' + (el.scrollHeight + 50) + 'px';
+        el.select()
+        el.setSelectionRange(0, 99999)
+        document.execCommand("copy")
+        vm.json = 'Copied to clipboard!\n\n' + vm.json
+      }, 0)
     }
   },
 }
@@ -183,9 +203,6 @@ input:hover, input:focus,
 textarea:hover, textarea:active{
   border: 1px solid #0b0c0c;
 }
-pre{
-  text-align: left;
-}
 button{
   max-width: 125px;
   font-size: 15px;
@@ -215,6 +232,10 @@ h1{
   width: min-content;
   margin: 0 auto;
   text-align: left;
+}
+.labelInput > div{
+  text-align: center;
+  margin-top: 10px;
 }
 .row{
   margin-bottom: 15px;
@@ -284,4 +305,17 @@ h1{
 .row > p{
   margin-top: 10px;
 }
+.pre {
+  background-color: ghostwhite;
+  border: 1px solid silver;
+  padding: 10px 20px;
+  margin: 20px;
+  display: block;
+  box-sizing:border-box;
+  width: 550px;
+  margin: auto;
+  display:block;
+  font-family: monospace;
+}
+
 </style>

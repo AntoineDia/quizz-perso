@@ -27,11 +27,11 @@
 <script>
 export default {
   name: 'Redirect',
-  props: ['holder','lang','config','qId'],
+  props: ['holder','lang','config','qId','optId','qIdInArray'],
   data(){
     return {
       next: false,
-      selected:'Choose a question or the end',
+      selected: 'Next question (default)',
       id: '',
     }
   },
@@ -45,6 +45,16 @@ export default {
       if(options.style.display === 'block') options.style.display = 'none'
       else options.style.display = 'block'
     },
+    updateAll(){
+      if(!this.optId){
+        var idArray = this.$parent.questions[this.lang].findIndex(function(q){
+          return q.id === this.holder.id
+        }.bind(this))
+        this.$parent.updateProp('question','next',idArray)
+      }else{
+        this.$parent.updateProp(this.qIdInArray, 'next', this.optId)
+      }
+    },
     updateNext(event, value){
       const $selector = event.target.parentElement.parentElement.querySelector('.selector')
       if(value !== -1){
@@ -55,6 +65,7 @@ export default {
         this.id = -1
         this.holder.next = -1
       }
+      this.updateAll()
       $selector.dispatchEvent(new Event('click'))
     },
   },
@@ -68,13 +79,19 @@ export default {
   },
   computed:{
     questionsChoice(){
+      var vm = this
       const questions = []
       this.config.questions[this.lang].forEach((q,i) => {
         if(q.id === this.qId) return this.next = true
         let qTemp = {}
-        if(this.next) qTemp = {
-          id: q.id,
-          question: 'Next Question: ' + (q.question || 'Question ' + (i+1))
+        if(this.next) {
+          if(this.id === '') {
+            this.id = q.id
+          }
+          qTemp = {
+            id: q.id,
+            question: 'Next Question: ' + (q.question || 'Question ' + (i+1))
+          }
         }
         else qTemp = {
           id: q.id,
@@ -84,10 +101,20 @@ export default {
         this.next = false
       })
       this.next = false
+      var exist = false
+      questions.forEach(function(q){
+        if(this.id === q.id) exist = true
+      }.bind(this))
+      if(!exist && this.id !== -1) this.id =''
+      vm.holder.next = this.id
+      if(this.id !== '') this.updateAll()
       return questions
     },
     selectedBind(){
       if(this.id === -1) return 'Finish'
+      if(this.id === ''){
+        return 'Next question (default)'
+      }
       let q = this.questionsChoice.find(el => {
         return (el.id === this.id)
       })
@@ -103,54 +130,58 @@ export default {
   font-size: 15px;
   padding: 10px 15px;
   width: 100%;
-  border: 1px solid #ccc;
-  background-color: white;
+  border: 1px solid #56585c;
+  background-color: #f5fbfa;
   cursor: pointer;
 }
 .redirectInput:hover{
-  border: 1px solid #444;
+  border: 1px solid #0b0c0c;
 }
 .holderRedirect{
   position: relative;
   widows: 100%;
 }
 .selector:hover{
-  border: 1px solid #444;
+  border: 1px solid #0b0c0c;
 }
 .selector{
-  background-color: white;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  padding: 10px 15px;
+  background-color: #f5fbfa;
+  border: 1px solid #56585c;
+  padding: 5px 10px;
   cursor: pointer;
   user-select: none;
 }
 .selector:after{
-  content: '\25C0';
+  content: '\25B6';
   float: right;
 }
 .optionsHolder{
   display: none;
 }
 .options{
-  background-color: white;
-  width: calc(100% - 32px);
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  padding: 10px 15px;
+  background-color: #f5fbfa;
+  width: calc(100% - 22px);
+  border: 1px solid #56585c;
+  padding: 5px 10px;
   cursor: pointer;
+  border-top: 0;
+}
+.options:not(:last-child){
+  border-radius: 0;
 }
 .options:hover{
   background-color: #eee;
 }
+/*
 .active:hover{
   border: 1px solid #ccc;
   background-color: #eee;
-}
+} */
 .active:after{
   content: "\25BC";
 }
 .finish{
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #db3254;
+  border-radius: 0 0 2px 2px;
 }
 </style>
