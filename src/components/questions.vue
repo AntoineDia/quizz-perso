@@ -110,7 +110,7 @@
             </div>
           </div>
         </div>
-        <button :class="answerEdition === qId ? '' : 'height0'" class="add" v-if="answerEdition"
+        <button :class="answerEdition === qId ? '' : 'height0'" class="add" v-if="answerEdition === qId"
           @click="addOption(qId)">Add option</button>
       </div>
     </div>
