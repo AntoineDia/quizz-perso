@@ -1,6 +1,10 @@
 <template>
 <div id="app">
 
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet">
+
   <div class="row max"
     v-if="Object.keys(config).length === 0">
     <h1>Questionary</h1>
@@ -56,7 +60,7 @@
     <button @click="save">GET JSON</button>
   </div>
 
-  <textarea class="pre" style="text-align:left;font-family:monospace"
+  <textarea class="pre" style="text-align:left;font-family:'Roboto Mono'"
     readonly="readonly"
     v-if="json.length > 0" v-model="json"
     ></textarea>
@@ -168,7 +172,7 @@ export default {
 }
 *{
   margin: 0; padding: 0; outline: 0;
-  font-family: sans-serif;
+  font-family: 'Nunito';
   color: #0b0c0c;
   background-color: #f0f1f5;
   border-style: none;
@@ -249,7 +253,7 @@ h1{
   color: #f0f1f5;
   border-radius: 2px;
   text-transform: uppercase;
-  font-family: 'Consolas';
+  font-family: 'Roboto Mono';
   margin: 0 5px;
   font-size: 20px;
   padding: 2px 7px;
@@ -315,7 +319,7 @@ h1{
   width: 550px;
   margin: auto;
   display:block;
-  font-family: monospace;
+  font-family: 'Roboto Mono';
 }
 
 </style>

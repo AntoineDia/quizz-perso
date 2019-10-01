@@ -19,7 +19,7 @@
             v-model="question.question" placeholder="What to ask?">
         </div>
       </div>
-      <div class="editAll" @click="editionMode = !editionMode"></div>
+      <div class="editAll" @click="editionMode === qId ? editionMode = -1 : editionMode = qId"></div>
       <div>
         <div class="buttonsHolder" v-for="(question, lang) in questionsByID" :key="lang"
           :class="[ !translationMode && lang !== langs[0] ? 'height0' : '' ]">
@@ -33,8 +33,7 @@
     </div>
     <div class="questionParams">
       <div class="inline params" v-for="(question, lang, i) in questionsByID" :key="i"
-        :class="[lang === langs[0] ? '' : 'hidden', editionMode ? '': 'height0']"
-      >
+        :class="[lang === langs[0] ? '' : 'hidden', editionMode === qId ? '': 'height0']">
         <div>
           <label>Answers redirect</label>
           <Redirect
@@ -67,11 +66,11 @@
     </div>
     <div class="answerRow">
       <span class="optionsHead">Options</span>
-      <button class="optionEdit" :class="answerEdition ? 'active' : ''"
-        @click="answerEdition = !answerEdition"></button>
+      <button class="optionEdit"
+        @click="answerEdition === qId ? answerEdition = -1 : answerEdition = qId"></button>
       <div>
         <div v-for="(options, optId) in optionByQuestion(qId)" :key="optId"
-           :class="!answerEdition ? 'height0' : ''" class="optionsRows">
+           :class="answerEdition !== qId ? 'height0' : ''" class="optionsRows">
           <div class="optionsTitle">Option {{parseInt(optId) + 1}}</div>
           <button class="edit delete optionDelete"
             @click="removeOption(qId,optId)"></button>
@@ -111,7 +110,7 @@
             </div>
           </div>
         </div>
-        <button :class="answerEdition ? '' : 'height0'" class="add" v-if="answerEdition"
+        <button :class="answerEdition === qId ? '' : 'height0'" class="add" v-if="answerEdition"
           @click="addOption(qId)">Add option</button>
       </div>
     </div>
@@ -127,7 +126,7 @@ export default {
   components: {Redirect},
   data: function(){ return {
     translationMode: true,
-    editionMode: false,
+    editionMode: -1,
     answerEdition: false,
     currentQ: {
       id: null, lang: null
@@ -211,7 +210,7 @@ export default {
   width: max-content;
   margin: auto;
   padding-bottom: 10px;
-  border-bottom: 10px solid #2266EE;
+  border-bottom: 5px solid #2266EE;
 }
 #questions label{
   width: max-content;
@@ -320,9 +319,9 @@ export default {
   color: #f0f1f5;
   border-radius: 2px;
   text-transform: uppercase;
-  font-family: 'Consolas';
+  font-family: 'Roboto Mono';
   font-size: 20px;
-  padding: 2px 7px;
+  padding: 0 7px;
   cursor: pointer;
   transition-property: opacity;
   transition-duration: 0.2s;
@@ -453,7 +452,7 @@ export default {
   padding-left: 5px;
 }
 .optionsRows:not(.height0){
-  width: min-content;
+  width: 70%;
   position: relative;
   transition-duration: 0.2s;
   margin-left: 10px;
@@ -487,6 +486,7 @@ export default {
 }
 .optionTextHolder{
   display: flex;
+  height: 28px;
 }
 .optionsHolder:not(:first-child):not(:last-child){
   margin: 5px 0;
