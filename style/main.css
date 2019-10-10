@@ -1,0 +1,31 @@
+/* LuckyCycle 2019 */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css?family=Rubik&display=swap');
+
+/* Components styles */
+@import url('./langs.css');
+@import url('./tags.css');
+@import url('./questions.css');
+@import url('./answers.css');
+
+/* Colors
+rgb(76, 82, 83)
+
+*/
+
+/* Style of app */
+*{
+  margin: 0; padding: 0; list-style-type: none;
+  border: 0;
+  font-family: 'Rubik';
+  transition: height .2s ease;
+}
+#hs-app{
+  margin: 5px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+#hs-app > * {
+  margin: 5px 0;
+}

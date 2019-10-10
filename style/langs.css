@@ -1,0 +1,79 @@
+#hs-langsComponent{
+ display: flex;
+}
+.hs-translation{
+  cursor: pointer;
+  align-self: stretch;
+  background-color: rgb(34, 102, 238);
+  width: 40px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px 0 0 3px;
+}
+.hs-translation > div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.hs-translationIcon{
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: top;
+  height: 34px;
+  width: 30px;
+  user-select: none;
+  background-image: url('https://img.icons8.com/metro/50/ffffff/translation.png');
+  background-size: 30px;
+}
+.hs-borderBottom{
+  display: block;
+  height: 4px;
+  background-color: #ffffff;
+  width: 100%;
+  border-radius: 2px;
+}
+.hs-langs{
+  width: 100%;
+  max-width: max-content;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border: 1px solid rgb(34, 102, 238);
+  border-radius: 0 3px 3px 0;
+}
+ul.hs-langs > li,
+.hs-translation {
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.hs-langItem,
+.hs-langItem.disabled:hover{
+  cursor: pointer;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px; height: 34px;
+  text-transform: uppercase;
+  margin: 0 8px;
+  background-size: cover;
+  filter: brightness(110%);
+}
+.hs-disabled{
+  opacity: 0.65;
+}
+.hs-disabled:hover{
+  opacity: 0.8;
+}
+.hs-langText{
+  border-radius: 3px;
+  font-size: 20px;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 0 2px;
+  font-weight: bold;
+  user-select: none;
+  text-align: center;
+}
