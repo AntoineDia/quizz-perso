@@ -4,7 +4,7 @@ var defaultQuestionary = {
       id: 0,
       next: 1,
       question: 'Quel est votre genre?',
-      col: 2, row: 1,
+      cols: 2, rows: 1,
       min: 1, max: 1,
       answers: [
         {
@@ -27,7 +27,7 @@ var defaultQuestionary = {
       id: 0,
       next: 1,
       question: 'What is your gender?',
-      col: 2, row: 1,
+      cols: 2, rows: 1,
       min: 1, max: 1,
       answers: [
         {
@@ -50,7 +50,7 @@ var defaultQuestionary = {
       id: 0,
       next: 1,
       question: 'Wat is je geslacht?',
-      col: 2, row: 1,
+      cols: 2, rows: 1,
       min: 1, max: 1,
       answers: [
         {
@@ -69,9 +69,5 @@ var defaultQuestionary = {
     }
   ]
 }
-
-document.addEventListener('PersonalityQuizDataLoad', function(e) {
-  defaultQuestionary = JSON.parse(e.json)
-})
 
 export default defaultQuestionary

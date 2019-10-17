@@ -35,10 +35,39 @@
 <script>
 export default {
   name: 'Tags',
-  props: ['tags','langs','questions'],
+  props: ['tags','langs','questions','tagByid'],
   data() {
     return {
-      tag: ''
+      tag: '',
+      nextTagId : 2,
+    }
+  },
+  watch: {
+    tags(){
+      this.tags.forEach(function(tag){
+        var found = this.tagByid.find(function(tagObj){
+          return tag === tagObj.name
+        }.bind(this))
+        if(!found){
+          this.tagByid.forEach(function(tagObj){
+            this.nextTagId <= tagObj.id ?
+              this.nextTagId = tagObj.id + 1 : ''
+          }.bind(this),0)
+          this.tagByid.push({
+            id: this.nextTagId,
+            name: tag
+          })
+        }
+      }.bind(this))
+      this.tagByid.forEach(function(tagObj,i){
+        var found = this.tags.find(function(tag){
+          return tag === tagObj.name
+        })
+        if(!found){
+          this.tagByid.splice(i,1)
+        }
+      }.bind(this))
+      this.$emit('tag-update',this.tagByid)
     }
   },
   methods: {
@@ -47,12 +76,16 @@ export default {
       this.tag = ''
     },
     confirmation: function(tag){
-      var tagIndex = this.tags.indexOf(tag)
       if(confirm('Are you sure you want to delete ' + tag +'?')) {
+        var tagIndex = this.tagByid.find(function(tagObj){
+          return tag === tagObj.name
+        })
+        tagIndex = tagIndex.id
         this.langs.forEach(lang => {
           this.questions[lang].forEach(question => {
             question.answers.forEach(answer => {
               var tags = answer.tags
+              console.log(tags, tags.indexOf(tagIndex))
               ~tags.indexOf(tagIndex) ?
                 answer.tags.splice(tags.indexOf(tagIndex),1) : ''
             })
@@ -66,9 +99,8 @@ export default {
         tags: this.tags,
         question: this.questions
       }
-      json = JSON.stringify(json)
-
+      console.log(json)
     }
   },
 }
-</script>
+  </script>

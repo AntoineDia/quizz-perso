@@ -18,14 +18,17 @@ rgb(76, 82, 83)
 *{
   margin: 0; padding: 0; list-style-type: none;
   border: 0;
-  font-family: 'Rubik';
-  transition: height .2s ease;
 }
 #hs-app{
+  font-family: 'Rubik';
   margin: 5px;
   overflow-x: hidden;
   overflow-y: hidden;
 }
 #hs-app > * {
   margin: 5px 0;
+}
+#hs-app * {
+  font-family: 'Rubik';
+  transition: height .2s ease;
 }

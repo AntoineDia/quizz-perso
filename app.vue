@@ -11,6 +11,8 @@
     :tags="tags"
     :langs="langs"
     :questions="questions"
+    :tagByid="tagByid"
+    v-on:tag-update="updateTag"
   />
 
   <Questions
@@ -18,6 +20,9 @@
     :langs="langs"
     :questions="questions"
     :tags="tags"
+    :arrayEdit="arrayEdit"
+    :lastId="lastId"
+    :tagByid="tagByid"
   />
 
 </div>
@@ -32,45 +37,64 @@ export default {
   components: {
     Langs, Tags, Questions
   },
-  watch: {
-    tags(){
-      var event = new CustomEvent("PersonalityQuizDataSave", {
-        detail: {
-          tags: this.tags,
-          question: this.questions
-        }
-      });
-      document.dispatchEvent(event)
-    },
-    questions(){
-      var event = new CustomEvent("PersonalityQuizDataSave", {
-        detail: JSON.stringify({
-          tags: this.tags,
-          question: this.questions
-        })
-      });
-      document.dispatchEvent(event)
-    }
-  },
   data: function(){
     return {
       langs: ['fr','en','nl'],
       currentLangs: [],
       tags: ['man','woman'],
-      questions: defaultQuestionary
+      questions: defaultQuestionary,
+      arrayEdit: [],
+      lastId: 1,
+      tagByid: [{id:0,name:'man'},{id:1,name:'woman'}],
+    }
+  },
+  watch: {
+    tags(){
+        var event = new CustomEvent("PersonalityQuizDataSave", {
+          detail: {
+            tags: this.tags,
+            questions: this.questions
+          }
+        });
+        document.dispatchEvent(event)
+        // console.log(event.detail)
+    },
+    questions:{
+      deep: true,
+      handler(){
+          var event = new CustomEvent("PersonalityQuizDataSave", {
+            detail: {
+              tags: this.tags,
+              questions: this.questions
+            }
+          });
+          document.dispatchEvent(event)
+        // console.log(JSON.stringify(event.detail))
+      }
     }
   },
   methods: {
     updateLang(langs){
       this.currentLangs = langs.slice()
+    },
+    updateTag(tagsObj){
+      this.tagByid = tagsObj
     }
   },
   mounted() {
     var vm = this
     document.addEventListener('PersonalityQuizDataLoad', function(e) {
-      var json = JSON.parse(e.detail)
-      vm.questions = json.questions ? json.questions : vm.questions
-      vm.tags = json.tags ? json.tags : vm.tags
+      setTimeout(function(){
+        var json = JSON.parse(e.detail)
+        vm.langs = Object.keys(json.questions)
+        vm.currentLangs = Object.keys(json.questions)
+        vm.questions = {... json.questions}
+        vm.tags = json.tags
+        vm.lastId = vm.questions[vm.langs[0]].length
+        vm.arrayEdit  = vm.questions[vm.langs[0]].map((q,i) => {
+          return i
+        })
+      },0)
     })
   },
 }

@@ -74,7 +74,7 @@
 .hs-inputRow > label{
   align-self: center;
   text-align: center;
-  width: 30px;
+  width: 30px; height: 25px;
   text-transform: uppercase;
   background-color: #56585c;
   color: #ffffff;

@@ -1,20 +1,18 @@
 <template>
-<div >
+<div>
 
 <div class="hs-questionNumber">
   <div v-for="(answer, iAnswer) in answers" :key="iAnswer"
-  :class="{'hs-selected' : ~selectedAnswers.indexOf(iAnswer)}"
-    @click="selectedAnswers = [iAnswer]"
+  :class="{'hs-selected' : ~(selectedAnswers||[]).indexOf(iAnswer)}"
+    @click="[selectedAnswers = [iAnswer], editionAnswer = [iAnswer], answerBranch = [iAnswer]]"
     class="hs-headNumber"
     >{{$parent.cleanNumber(iAnswer)}}</div>
-  <div class="hs-new"
-    @click="addAnswer()"
-  >+</div>
+  <div class="hs-new" @click="addAnswer()">+</div>
 </div>
 <div class="hs-answersMaster">
 <div class="hs-answers"
-  v-for="(answer, iAnswer) in answers" :key="iAnswer"
-  :class="{ 'hs-hiddenInSight':  !~selectedAnswers.indexOf(iAnswer)}"
+  v-for="(answer, iAnswer) in answers" :key="iAnswer" v-if="answer"
+  :class="{ 'hs-hiddenInSight':  !~(selectedAnswers||[]).indexOf(iAnswer)}"
 >
   <div class="hs-questionRow">
     <div class="hs-questionBody">
@@ -41,10 +39,10 @@
 
     <div class="hs-questionParams">
         <label class="hs-labelInput hs-redirectLabel"
-          v-if="branching || ~answerBranch.indexOf(iAnswer)"
+          v-if=" ~(answerBranch||[]).indexOf(iAnswer)"
         >Answer redirect</label>
         <div style="position:relative"
-          v-if="branching || ~answerBranch.indexOf(iAnswer)"
+          v-if=" ~(answerBranch||[]).indexOf(iAnswer)"
         >
           <div class="hs-inputRow hs-redirect">
             <Redirect
@@ -59,7 +57,7 @@
           </div>
         </div>
         <template
-          v-if="~editionAnswer.indexOf(iAnswer)"
+          v-if="~(editionAnswer||[]).indexOf(iAnswer)"
         >
           <label class="hs-labelInput">Picture source</label>
           <div class="hs-inputRow">
@@ -68,20 +66,20 @@
             >
           </div>
             <div class="hs-imgHolder"
-              v-if="arrInclude(answerBranch, iAnswer) || arrInclude(editionAnswer,iAnswer) || branching"
+              v-if="arrInclude(answerBranch, iAnswer) || arrInclude(editionAnswer,iAnswer)"
               :style="{ backgroundImage : `url(${answer.src})` }"
             ></div>
-          <label class="hs-labelInput">Tags: {{answer.tags.length}} selected</label>
+          <label class="hs-labelInput">Tags: {{(answer.tags || []).length}} selected</label>
           <div class="hs-tagsRow">
             <span
-              v-for="(tag, i) in tags" :key="tag"
-              @click="toggleInArray(answer.tags, i)"
-            ><span v-if="~answer.tags.indexOf(i)"
+              v-for="(tag, i) in tagByid" :key="i"
+              @click="toggleInArray(answer.tags||[], tag.id)"
+            ><span v-if="~(answer.tags||[]).indexOf(tag.id)"
                 class="hs-coshed"
               ></span>
               <span v-else
                 class="hs-uncoshed"
-              ></span>{{tag}}</span>
+              ></span>{{tag.name}}</span>
           </div>
         </template>
       </div>
@@ -91,16 +89,16 @@
     <div class="hs-edition">
         <div class="hs-editIcon"
           @click="[
-            toggleInArray(editionAnswer,iAnswer),
-            arrInclude(answerBranch,iAnswer) &&
-            arrInclude(editionAnswer,iAnswer) ? '' :
-            toggleInArray(answerBranch,iAnswer)
+            toggleInArray(editionAnswer||[],iAnswer),
+            arrInclude(answerBranch||[],iAnswer) &&
+            arrInclude(editionAnswer||[],iAnswer) ? '' :
+            toggleInArray(answerBranch||[],iAnswer)
           ]"
         ><span
-         :class="{ 'hs-disabled' : !arrInclude(editionAnswer,iAnswer)  }"
+         :class="{ 'hs-disabled' : !arrInclude(editionAnswer||[],iAnswer)  }"
         ></span>
           <span class="hs-borderBottom"
-            :class="{ 'hs-disabled' : !arrInclude(editionAnswer,iAnswer)  }"
+            :class="{ 'hs-disabled' : !arrInclude(editionAnswer||[],iAnswer)  }"
           ></span>
         </div>
         <i class="hs-deleteIcon"
@@ -120,13 +118,17 @@
 import Redirect from './redirect'
 export default {
   name: 'Answers',
-  props: ['i', 'answers', 'questions','langs','currentLangs', 'branching', 'tags'],
+  props: ['i', 'answers', 'questions','langs','currentLangs', 'tags','tagByid'],
   components: { Redirect },
   data() {
+    var editAnswers = []
+    this.answers.forEach(function(a,i){
+      editAnswers.push(i)
+    })
     return {
-      answerBranch: [],
-      editionAnswer: [0,1],
-      selectedAnswers: [0]
+      answerBranch: editAnswers,
+      editionAnswer: editAnswers,
+      selectedAnswers: [0],
     }
   },
   methods: {
@@ -143,16 +145,18 @@ export default {
         this.questions[lang][this.i].answers.splice(iAnswer, 1)
       }.bind(this))
     },
-    addAnswer(iAnswer){
+    addAnswer(){
       this.editionAnswer.push(this.questions[this.langs[0]][this.i].answers.length)
       this.langs.forEach(function(lang){
         this.questions[lang][this.i].answers.push({
           text: '',
           next: '',
           tags: [],
-          src: 'https://picsum.photos/200/300',
+          src: 'https://picsum.photos/300/200',
         })
       }.bind(this))
+      this.selectedAnswers = [(this.answers.length - 1)]
+      this.answerBranch = [(this.answers.length - 1)]
     }
   },
 }

@@ -10,7 +10,7 @@
 
         <div class="optionsHolder" ref="optionsHolder">
           <p class="options"
-            v-for="(question, i) in questionsChoice" :key = "question.id + i"
+            v-for="(question, i) in questionsChoice" :key="(question.id)"
             @click="newNext(question.id)"
             :style="{ transform: slide(i) }"
           >{{question.question}}</p>
@@ -32,7 +32,6 @@ export default {
   props: ['holder','lang','langs','qId','questions','optId'],
   data(){
     return {
-      next: false,
       selected: 'Next question (default)',
       next: '',
     }
@@ -49,7 +48,6 @@ export default {
     },
     newNext(i){
       this.holder.next = i
-      console.log(this.holder.next)
       if(this.$refs.optionsHolder.style.display === 'block')
         this.$refs.optionsHolder.style.display = 'none'
       else this.$refs.optionsHolder.style.display = 'block'
@@ -57,7 +55,6 @@ export default {
   },
   computed:{
     questionsChoice(){
-      var vm = this
       const questions = []
       this.questions[this.lang].forEach((q,i) => {
         if(i === this.qId) return
@@ -68,21 +65,28 @@ export default {
         }
         questions.push(qTemp)
       })
-      var exist = false
-      questions.forEach(function(q){
-        if(this.next === q.id) exist = true
-      }.bind(this))
-      if(!exist && this.next !== -1) this.next =''
       return questions
     },
     selectedBind(){
+      if(!this.holder.next){
+        return '-'
+      }
       if(this.holder.next === -1) return 'Finish'
 
       var q = this.questionsChoice.find(el =>{
         return el.id === this.holder.next
       })
 
-      if(!q) return this.selected
+      if(!q){
+        var qI = this.questionsChoice.find(el =>{
+          return el.id === (this.holder.next + 1)
+        })
+        if(qI){
+          this.holder.next = qI.id
+          return (qI.question || 'Question ' + (this.qId))
+        }
+        return this.selected
+      }
       return (q.question || 'Question ' + (this.qId))
     },
   },

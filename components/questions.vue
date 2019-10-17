@@ -2,7 +2,7 @@
 <div>
 
 <div class="hs-questionNumber">
-  <div v-for="(question, i) in questions[langs[0]]" :key="i"
+  <div v-for="(question, i) in questions[langs[0]]" :key="(question.id) + (i)"
     :class="{'hs-selected' : i === selectedQuestion}"
     @click="selectedQuestion = i"
     class="hs-headNumber"
@@ -14,7 +14,7 @@
 
 <div
   class="hs-questions"
-  v-for="(question, i) in questions[currentLangs[0]]" :key="i"
+  v-for="(question, i) in questions[currentLangs[0]]" :key="(question.id) + (i)"
   :class="{'hs-hiddenInSight' : selectedQuestion !== i }"
 >
 
@@ -93,13 +93,13 @@
             <div class="hs-inputRow">
               <label>rows</label>
               <input type="number"
-                v-model="question.row"
+                v-model="question.rows"
               >
             </div>
             <div class="hs-inputRow">
               <label>cols</label>
               <input type="number"
-                v-model="question.col"
+                v-model="question.cols"
               >
             </div>
           </div>
@@ -137,7 +137,7 @@
     :langs='langs'
     :currentLangs='currentLangs'
     :tags="tags"
-    :branching="arrInclude(questionBranch,i)"
+    :tagByid="tagByid"
   />
 </div>
 
@@ -148,13 +148,19 @@ import Answers from './answers'
 import Redirect from './redirect'
 export default {
   name: 'Questions',
-  props: ['questions','langs','currentLangs', 'tags'],
+  props: [
+    'questions','langs','currentLangs', 'tags', 'arrayEdit', 'lastId','tagByid'
+  ],
   components: { Answers, Redirect },
   data() {
+    var arrayEdit = []
+    this.questions[this.langs[0]].forEach(function(a,i){
+      arrayEdit.push(i)
+    })
     return {
       questionBranch: [0],
-      editionQuestions: [0],
-      lastQuestionId: this.questions[this.langs[0]].length,
+      editionQuestions: arrayEdit || [0],
+      lastQuestionId: this.lastId,
       selectedQuestion: 0,
     }
   },
@@ -179,22 +185,34 @@ export default {
       }.bind(this))
     },
     addQuestion(){
-      this.editionQuestions.push(this.questions[this.langs[0]].length)
+      this.questions[this.langs[0]].forEach(question => {
+        if(question.id === this.lastQuestionId) this.lastQuestionId++
+      })
       this.langs.forEach(function(lang){
         this.questions[lang].push({
           question: '',
           id: this.lastQuestionId,
-          col: 2, row: 1,
+          cols: 2, rows: 1,
           min: 1, max: 1,
           next : this.lastQuestionId + 1,
-          answers: [{
-            text: '',
-            next: '',
-            tags: [],
-            src: 'https://picsum.photos/200/300',
-          }]
+          answers: [
+            {
+              text: '',
+              next: '',
+              tags: [],
+              src: 'https://picsum.photos/200/300',
+            },
+            {
+              text: '',
+              next: '',
+              tags: [],
+              src: 'https://picsum.photos/250/300',
+            }
+          ]
         })
       }.bind(this), {})
+      this.editionQuestions.push(this.lastQuestionId)
+      this.selectedQuestion =  this.lastQuestionId,
       this.lastQuestionId = this.lastQuestionId + 1
     },
     resizeArea(area){
@@ -214,10 +232,14 @@ export default {
     }
   },
   watch:{
+    arrayEdit(){
+      this.editionQuestions = this.arrayEdit
+    },
     lang0:{
       deep: true,
       handler(){
-        var propsQuestion = ['next','col','row','min','max']
+        // console.log('watch lang0')
+        var propsQuestion = ['next','cols','rows','min','max']
         var propsAnswer = ['next','src','tags']
         this.langs.forEach(function(lang){
           if(lang === this.currentLangs[0]) return
@@ -234,6 +256,8 @@ export default {
             q.answers.forEach(function(answer,j){
               propsAnswer.forEach(function(prop){
                 if(prop === 'tags'){
+                  // console.log('tags')
+                  // console.log(this.questions[this.currentLangs[0]][i].answers[j][prop])
                   answer[prop] = this.questions[this.currentLangs[0]][i].answers[j][prop].slice()
                 }
                  answer[prop] = this.questions[this.currentLangs[0]][i].answers[j][prop]
